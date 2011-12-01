@@ -1,10 +1,14 @@
-function CircleSession (type){
+function CircleSession (type, instrument){
 	var boards = {},
 	stepTime = 500,
 	interval,
-	size = [8,10],
-	type = type;
+	size = [8,12],
+	type = type,
+	init;
 		
+	var start = function () {
+		now.sendStart(size);
+	}
 	
 	var stop = function () {
 		clearInterval(interval)
@@ -15,7 +19,7 @@ function CircleSession (type){
 			userID = 1;
 		}
 		
-		boards[userID] = new Board(userID, instrument, size, type);
+		boards[userID] = new Board(instrument, userID, size, type);
 	}
 	
 	var deleteBoard = function(clientID) {
@@ -29,47 +33,45 @@ function CircleSession (type){
 		}	
 		
 	}
-	
-	now.ready(function(){
-		console.log(type);
-		if(type == "host") {
-			now.receiveToggleCell = function (col, row, userID) {
-				boards[userID].toggleCell(col,row);
-			}
-			
-			now.receiveAddBoard = function(type, userID){
-				addBoard(type, userID);
-			}
-
-			now.receiveDeleteBoard = function(userID){
-				deleteBoard(userID);
-			}
 		
-			console.log(size);
-			now.sendStart(size)
-		} else if (type == "client") {
-			addBoard('synth');
-			now.sendAddBoard('synth');
+	if(type == "host") {
+		now.receiveToggleCell = function (col, row, userID) {
+			boards[userID].toggleCell(col,row);
 		}
-	});
+		
+		now.receiveAddBoard = function(instrument, userID){
+			addBoard(instrument, userID);
+		}
+
+		now.receiveDeleteBoard = function(userID){
+			deleteBoard(userID);
+		}
+	
+		console.log(size);
+		now.sendStart(size)
+	} else if (type == "client") {
+		addBoard(instrument)
+		now.sendAddBoard(instrument);
+	}
 	
 	return {
-		addBoard: addBoard,
 		start: start,
+		addBoard: addBoard,
 		stop: stop
 	}
 }
 
-function Board(number, instrument, size, type){
+function Board(instrument, userID, size, type){
 	var size = size,
 	cells = [],
 	boardDiv = document.createElement('div'),
-	id = "board"+number,
+	id = "board"+userID,
 	$boardDiv;
 			
 	var init = function () {
 		var j, i, addArr,
 		addHTML = "";
+		addClass = (type=="host")? 'host-table' : 'client-table';
 		
 		for (i=0; i<size[1]; i++) {	
 			var addArr = [];
@@ -77,6 +79,7 @@ function Board(number, instrument, size, type){
 			
 			for (j=0; j<size[0]; j++) {
 				if (type == "host"){
+					console.log(instrument);
 					addArr.push([new AudioTrack('static/audio/'+instrument+'/ns'+j+'.wav',0), 0]); //audiotrack, on/off
 				}
 				addHTML += '<td class="off">'+j+'</td>';
@@ -87,22 +90,21 @@ function Board(number, instrument, size, type){
 			//
 		}
 		
-		boardDiv.innerHTML = "<table>" + addHTML + "</table>";
+		
+		boardDiv.innerHTML = "<table class='bw "+addClass+"'>" + addHTML + "</table>";
 		
 		boardDiv.id = id;
 		$('body').append(boardDiv);
 		$boardDiv = $('#'+id);
 		
 		if (type == 'client') {
-			$boardDiv.on("click", "td", function(event){
+			$boardDiv.on("touchstart", "td", function(event){
 				$(this).toggleClass('on');
 				
 				var $tr = $(this).parent();
 				var col = $(this).index();
 				var row = $tr.index();
 				
-				console.log(now.sendToggleCell);
-				console.log(now);
 				now.sendToggleCell(col,row);
 			});
 		}
@@ -209,6 +211,3 @@ function AudioTrack (src, start){
 	};
 }
 
-
-
-//
