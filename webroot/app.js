@@ -4,7 +4,8 @@ function CircleSession (type, instrument){
 	interval,
 	size = [8,12],
 	type = type,
-	init;
+	init,
+	boardCount = 0;
 		
 	var start = function () {
 		now.sendStart(size);
@@ -19,7 +20,20 @@ function CircleSession (type, instrument){
 			userID = 1;
 		}
 		
+		if (boards[userID]){
+			deleteBoard(userId);
+		}
+		
+		
+		
 		boards[userID] = new Board(instrument, userID, size, type);
+		
+		if (type == 'host') {
+				console.log(boardCount);
+				boards[userID].position(215*boardCount, (boardCount % 2)*100+50);
+		}
+		
+		boardCount++;
 	}
 	
 	var deleteBoard = function(clientID) {
@@ -67,6 +81,17 @@ function Board(instrument, userID, size, type){
 	boardDiv = document.createElement('div'),
 	id = "board"+userID,
 	$boardDiv;
+	
+	if ('ontouchstart' in document.documentElement) {
+	  var touchevent = 'ontouchstart';
+	} else {
+		var touchevent = 'click';
+	}
+	
+	if (type == 'host'){
+		boardDiv.style.position = 'absolute';
+	}
+	
 			
 	var init = function () {
 		var j, i, addArr,
@@ -98,7 +123,7 @@ function Board(instrument, userID, size, type){
 		$boardDiv = $('#'+id);
 		
 		if (type == 'client') {
-			$boardDiv.on("touchstart", "td", function(event){
+			$boardDiv.on(touchevent, "td", function(event){
 				$(this).toggleClass('on');
 				
 				var $tr = $(this).parent();
@@ -142,13 +167,18 @@ function Board(instrument, userID, size, type){
 	var deleteSelf = function () {
 			$boardDiv.remove();
 	}
+	
+	var position = function (x,y){
+		$boardDiv.css('top',y).css('left',x);	
+	}
 	init();
 	
 	
 	return {
 		playLine: playLine,
 		toggleCell: toggleCell,
-		deleteSelf: deleteSelf
+		deleteSelf: deleteSelf,
+		position: position
 	}
 	
 }

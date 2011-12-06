@@ -34,30 +34,27 @@ var interval;
 //Connect and disconnect functions, group managers
 everyone.on('connect', function() {
 	util.log('connect');
-    //joinGroup(this.now.roomID, this);
 });
 
 everyone.on('disconnect', function() {
 	everyone.now.receiveDeleteBoard(this.user.clientId);
-		/*
-    var group = nowjs.getGroup(this.now.roomID);
-    if (group.player == this.user.clientId) {
-        group.player = null;
-    }*/
 });
 
-everyone.joinGroup = function (groupId) {
+everyone.now.joinGroup = function (groupId) {
     // Add a user to a group
-    var group = nowjs.getGroup(groupId);
-    group.addUser(client.user.clientId);
+    var group = nowjs.getGroup(this.now.room);
+    group.addUser(this.user.clientId);
+    util.log(this.user.clientId + 'is in' + this.now.room);
 }
 
 everyone.now.sendToggleCell = function (col, row) {
-		everyone.now.receiveToggleCell(col, row, this.user.clientId);
+		var group = nowjs.getGroup(this.now.room)
+		group.now.receiveToggleCell(col, row, this.user.clientId);
 }
 
 everyone.now.sendAddBoard = function (instrument) {
-		everyone.now.receiveAddBoard(instrument, this.user.clientId); 
+		var group = nowjs.getGroup(this.now.room)
+		group.now.receiveAddBoard(instrument, this.user.clientId); 
 }
 
 everyone.now.sendStart = function (size) {
@@ -65,8 +62,9 @@ everyone.now.sendStart = function (size) {
 	
 	if (!interval) {
 		var size = size;
+		var group = nowjs.getGroup(this.now.room)
 		interval = setInterval(function(){
-			everyone.now.nextLine(index);
+			group.now.nextLine(index);
 			
 			if (index % (size[1] - 1) === 0 && index !== 0){
 				index = 0;

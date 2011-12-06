@@ -20,8 +20,9 @@ var app = $.sammy('body', function() {
 				room = 'testing';
 			}
 			
-			now.room;
-			
+			now.room = room;
+			now.joinGroup();
+						
 			$('body').load('static/host.html', function(){
 				var game = CircleSession('host');
 				game.start();
@@ -39,11 +40,11 @@ var app = $.sammy('body', function() {
 				room = 'testing';
 			}
 			
-			now.room;
-			
+			now.room = room;
+			now.joinGroup();
 			
 			$('body').load('static/client.html', function(){
-				console.log(instrument);
+				
 				var game = CircleSession('client', instrument);
 				game.start();
 			});
