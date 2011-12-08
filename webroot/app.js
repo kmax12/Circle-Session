@@ -1,4 +1,5 @@
 function CircleSession (type, instrument){
+	window.scrollTo(0, 1);
 	var boards = {},
 	stepTime = 500,
 	interval,
@@ -10,7 +11,7 @@ function CircleSession (type, instrument){
 	var start = function () {
 		now.sendStart(size);
 	}
-	
+	console.log('m');
 	var stop = function () {
 		clearInterval(interval)
 	}
@@ -20,9 +21,7 @@ function CircleSession (type, instrument){
 			userID = 1;
 		}
 		
-		if (boards[userID]){
-			deleteBoard(userId);
-		}
+		
 		
 		
 		
@@ -37,8 +36,11 @@ function CircleSession (type, instrument){
 	}
 	
 	var deleteBoard = function(clientID) {
-			boards[clientID].deleteSelf();
-			delete boards[clientID];
+			if (boards[clientID]){
+				boards[clientID].deleteSelf();
+			
+				delete boards[clientID];
+			}
 	}
 			
 	now.nextLine = function(index){
@@ -47,7 +49,7 @@ function CircleSession (type, instrument){
 		}	
 		
 	}
-		
+	
 	if(type == "host") {
 		now.receiveToggleCell = function (col, row, userID) {
 			boards[userID].toggleCell(col,row);
@@ -60,11 +62,10 @@ function CircleSession (type, instrument){
 		now.receiveDeleteBoard = function(userID){
 			deleteBoard(userID);
 		}
-	
-		console.log(size);
+		
 		now.sendStart(size)
 	} else if (type == "client") {
-		addBoard(instrument)
+		addBoard(instrument);
 		now.sendAddBoard(instrument);
 	}
 	
@@ -80,16 +81,35 @@ function Board(instrument, userID, size, type){
 	cells = [],
 	boardDiv = document.createElement('div'),
 	id = "board"+userID,
-	$boardDiv;
+	$boardDiv,
+	ios = false;
+	mousedown = false,
+	lastElems = {},
+	lastElem = null,
+	currElem = null,
+	currElems = [];
 	
-	if ('ontouchstart' in document.documentElement) {
-	  var touchevent = 'ontouchstart';
+	if (navigator.userAgent.toLowerCase().search('ipad') >-1 || navigator.userAgent.toLowerCase().search('iphone') >-1) {
+		var downEvent = 'touchstart',
+		dragEvent = 'touchmove',
+		upEvent = 'touchend',
+		ios = true;
+	
 	} else {
-		var touchevent = 'click';
+		var downEvent = 'mousedown',
+		dragEvent = 'mousemove',
+		upEvent = 'mouseup';
 	}
 	
+	
+	
 	if (type == 'host'){
-		boardDiv.style.position = 'absolute';
+		boardDiv.style.height = '450px';
+		boardDiv.style.width = '300px';
+		boardDiv.style.float = 'left';
+		boardDiv.style.margin = '10px';
+		boardDiv.className = "transitions";
+		
 	}
 	
 			
@@ -98,6 +118,8 @@ function Board(instrument, userID, size, type){
 		addHTML = "";
 		addClass = (type=="host")? 'host-table' : 'client-table';
 		
+		addClass += " " + "drums" ;
+		
 		for (i=0; i<size[1]; i++) {	
 			var addArr = [];
 			addHTML += '<tr>';
@@ -105,35 +127,105 @@ function Board(instrument, userID, size, type){
 			for (j=0; j<size[0]; j++) {
 				if (type == "host"){
 					console.log(instrument);
-					addArr.push([new AudioTrack('static/audio/'+instrument+'/ns'+j+'.wav',0), 0]); //audiotrack, on/off
+					addArr.push([new AudioTrack('static/audio/'+instrument+'/'+j+'.wav',0), 0]); //audiotrack, on/off
 				}
-				addHTML += '<td class="off">'+j+'</td>';
+				addHTML += '<td class="off"></td>';
 			}
 			
 			cells.push(addArr);
 			addHTML += '</tr>';
-			//
+			// 
 		}
 		
 		
-		boardDiv.innerHTML = "<table class='bw "+addClass+"'>" + addHTML + "</table>";
+		boardDiv.innerHTML = "<table class='" +addClass+"'>" + addHTML + "</table>";
+		
+		if (type == "host"){
+				boardDiv.innerHTML+= "<div class='title'>"+instrument+"</div>"
+		}
 		
 		boardDiv.id = id;
-		$('body').append(boardDiv);
+		$('#body').append(boardDiv);
 		$boardDiv = $('#'+id);
 		
+		
 		if (type == 'client') {
-			$boardDiv.on(touchevent, "td", function(event){
-				$(this).toggleClass('on');
+			$boardDiv.on(downEvent, "td", function(event){
+				currElems = [];
+				mousedown = true;
+				if (ios) {
+					var touches = event.originalEvent.touches;
+					event.originalEvent.preventDefault();
+					for (var i = 0, max = touches.length; i<max;i++){
+							currElems.push([document.elementFromPoint(touches[i].clientX,event.originalEvent.touches[i].clientY), touches[i].identifier]);
+					}
+				} else {
+					currElems.push(document.elementFromPoint(event.clientX,event.clientY));
+				}
 				
-				var $tr = $(this).parent();
-				var col = $(this).index();
-				var row = $tr.index();
+				console.log(currElems);
 				
-				now.sendToggleCell(col,row);
+				toggleCellProcess();
+			});
+			
+			$boardDiv.on(upEvent, "td", function(event){
+				if (ios){
+					lastElem[event.originalEvent.touches[0].identifier] =  null;
+				}
+			
+				mousedown = false;
+			});
+
+			$boardDiv.on(dragEvent, "td", function(event){
+				currElems = [];
+				if (ios){
+					var touches = event.originalEvent.touches;
+					event.originalEvent.preventDefault()
+					for (var i = 0, max = touches.length; i<max;i++){
+							currElems.push([document.elementFromPoint(touches[i].clientX,event.originalEvent.touches[i].clientY), touches[i].identifier]);
+					}
+				} else if(mousedown) {
+					currElems.push(document.elementFromPoint(event.clientX,event.clientY));
+				}
+				
+				toggleCellProcess()
+							
 			});
 		}
 	}
+	
+	var toggleCellProcess = function () {
+		for (var i = 0, max = currElems.length; i<max; i++){
+					
+					if (ios){
+						var id = currElems[i][1];
+						currElem = currElems[i][0];
+						lastElem = lastElems[id];
+					} else {
+						currElem = currElems[i];
+						lastElem = lastElem;
+					}
+					if (mousedown && currElem !== lastElem && currElem.nodeName.toLowerCase() == "td"){				
+						
+						$elem = $(currElem);
+						$elem.toggleClass('on');
+						
+						var $tr = $elem.parent();
+						var col = $elem.index();
+						var row = $tr.index();					
+						
+						now.sendToggleCell(col,row);
+						
+						if (ios){
+							lastElems[id] = currElem;
+							
+						} else {
+							lastElem = currElem;
+						};
+					}
+				}
+	}
+	
 	
 	var playLine = function (l) {
 		
@@ -141,13 +233,12 @@ function Board(instrument, userID, size, type){
 		$boardDiv.find('tr').eq(l-1).removeClass('row-highlight');
 		$boardDiv.find('tr').eq(l).addClass('row-highlight');
 		
-		
 		if (type == "host") {
 			for (var i=0; i<size[0]; i++){
 					if (line[i][1] === 1){
 						line[i][0].setTime(0);
 						line[i][0].play();
-					}
+					} 
 			}
 		}
 	}
@@ -160,12 +251,13 @@ function Board(instrument, userID, size, type){
 			cells[row][col][1] = 0
 		}
 		
-		console.log($boardDiv.find('tr').eq(row).find('td').eq(col));
 		$boardDiv.find('tr').eq(row).find('td').eq(col).toggleClass('on');		
 	}
 	
 	var deleteSelf = function () {
+		if ($boardDiv){
 			$boardDiv.remove();
+		}
 	}
 	
 	var position = function (x,y){

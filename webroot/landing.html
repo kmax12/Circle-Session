@@ -2,21 +2,27 @@
 
 <body>
 	<div>
-	<h1> Circle Session</h1>
+	<h1 id="logo"> Circle Session</h1>
 	
-	<div>
-	<input id="host-input" type="text" />
-	<button id="host">Host room</button>
-	</div>
-	
-	<div>
-		<input id="join-input" type="text" />
-		<select id="instrument-input">
+	<ul>
+		<li>
+			1. Find a Host </br>
+			<input id="host-input" type="text" value="Testing"/> <button id="host">Host room</button>
+		</li>
+		<li>
+			2. Pick an instrument </br>
+			<select id="instrument-input">
 				<option value="0">Synth</option>
 				<option value="1">Drums</option>
-				<option value="2">Marimba</option>
-		</select>
-		<button id="join">Join room</button>
-	</div>
+				<option value="2">Saxophone 1</option>
+				<option value="3">Saxophone 2</option>
+			</select>
+		</li>
+		<li>
+			3. Join a Circle Session </br>
+			<input id="join-input" type="text"  value="Testing"/>
+			<button id="join">Join room</button>
+		</li>
+	</ul>
 </div>
 

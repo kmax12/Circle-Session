@@ -27,9 +27,9 @@ server.get('/',function(req, response){
 
 server.listen(8080);
 
-var everyone = nowjs.initialize(server);
-
-var interval; 
+var everyone = nowjs.initialize(server),
+interval,
+hosts = []; 
 
 //Connect and disconnect functions, group managers
 everyone.on('connect', function() {
@@ -40,11 +40,20 @@ everyone.on('disconnect', function() {
 	everyone.now.receiveDeleteBoard(this.user.clientId);
 });
 
-everyone.now.joinGroup = function (groupId) {
+everyone.now.joinGroup = function (groupId, host) {
     // Add a user to a group
-    var group = nowjs.getGroup(this.now.room);
-    group.addUser(this.user.clientId);
-    util.log(this.user.clientId + 'is in' + this.now.room);
+    /*if (host) {
+			hosts.push(groupId);
+	}*/
+	
+	//if (hosts.indexOf(groupId) > -1) {
+		var group = nowjs.getGroup(this.now.room);
+		group.addUser(this.user.clientId);
+		util.log(this.user.clientId + 'is in' + this.now.room);
+		//return true;
+	//} else {
+		//return false;
+	//}
 }
 
 everyone.now.sendToggleCell = function (col, row) {
@@ -59,8 +68,11 @@ everyone.now.sendAddBoard = function (instrument) {
 
 everyone.now.sendStart = function (size) {
 	var index = 0;
-	
+	if (interval){
+		util.log(interval);
+	}
 	if (!interval) {
+		util.log('start');
 		var size = size;
 		var group = nowjs.getGroup(this.now.room)
 		interval = setInterval(function(){
@@ -71,7 +83,7 @@ everyone.now.sendStart = function (size) {
 			} else {
 				index++
 			}
-		}, 250);
+		}, 300);
 	}
 }
 

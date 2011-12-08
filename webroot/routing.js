@@ -12,18 +12,19 @@ var app = $.sammy('body', function() {
 		this.$element().on('click','#host', function(){
 			console.log('click');
 			var room = $('#host-input').val();
-			
-			var game = CircleSession('host');
-			
+					
 				
 			if (!room){
-				room = 'testing';
+				room = 'Testing';
 			}
 			
 			now.room = room;
 			now.joinGroup();
+			
 						
 			$('body').load('static/host.html', function(){
+				console.log('A');
+				$('#logo').html(room)
 				var game = CircleSession('host');
 				game.start();
 			});
@@ -34,17 +35,17 @@ var app = $.sammy('body', function() {
 			
 			
 			var room = $('#join-input').val(),
-			instruments = {"0":'synth', "1":'drums', "2":'marimba'},
+			instruments = {"0":'synth', "1":'drums', "2":'sax1', "3":"sax2"},
 			instrument = instruments[$('#instrument-input').val()];
 			if (!room){
-				room = 'testing';
+				room = 'Testing';
 			}
 			
 			now.room = room;
 			now.joinGroup();
 			
+			
 			$('body').load('static/client.html', function(){
-				
 				var game = CircleSession('client', instrument);
 				game.start();
 			});
@@ -59,6 +60,9 @@ var app = $.sammy('body', function() {
 
 $(window).ready(function(){
 	setTimeout( function(){ window.scrollTo(0, 1); }, 10 );
+	$('html').on('touchmove', function(event){
+		event.originalEvent.preventDefault();
+	})
 });;
 
 now.ready(function() {

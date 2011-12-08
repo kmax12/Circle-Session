@@ -1,79 +1,237 @@
 <html>
 <head>
+	<link rel="shortcut icon" href="static/favicon.ico">
+	<link rel="apple-touch-icon" href="static/c.png"/>
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 	<meta content='True' name='HandheldFriendly' />
 	<meta content='width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;' name='viewport' />
 	<meta name="viewport" content="width=device-width" />
 <style>
 	body{
-		background-color: #444;
+		background-color: #eef ;
 		min-height:500px;
-	}
+		color: #efffff;
 		
+	}
+	
+	@media 	(max-device-width: 480px){
+		ul {
+			 font-size: 15px;
+			 width: 300px;
+		}
+		#logo {
+			font-size: 30px;
+		}
+		
+		.client-table{
+			height:	440px;
+			width: 300px;
+		}
+	}
+	
+	@media 	(min-device-width: 480px){
+		ul {
+			 font-size: 30px;
+			 width: 480px;
+		}
+		#logo {
+			font-size: 100px;
+		}
+		
+		ul {
+			margin: 10px;
+		}
+		
+		.client-table{
+			height:	100%;
+			width: 100%;
+		}
+	}
+	
+	ul {
+		 list-style: none;
+		 font-weight: bold;
+		 margin: 0px auto;
+		 padding: 0px;
+	}
+	
+	li {
+			padding: 5px 5px;
+			margin: 10px 0px;
+			background-color: #ccc;
+			text-shadow: 0 -1px 1px rgba(0,0,0,0.25);
+			box-shadow: 0 2px 6px rgba(0,0,0,0.5), inset 0 1px rgba(255,255,255,0.3), inset 0 10px rgba(255,255,255,0.2), inset 0 10px 20px rgba(255,255,255,0.25), inset 0 -15px 30px rgba(0,0,0,0.3);
+			-o-box-shadow: 0 2px 6px rgba(0,0,0,0.5), inset 0 1px rgba(255,255,255,0.3), inset 0 10px rgba(255,255,255,0.2), inset 0 10px 20px rgba(255,255,255,0.25), inset 0 -15px 30px rgba(0,0,0,0.3);
+			-webkit-box-shadow: 0 2px 6px rgba(0,0,0,0.5), inset 0 1px rgba(255,255,255,0.3), inset 0 10px rgba(255,255,255,0.2), inset 0 10px 20px rgba(255,255,255,0.25), inset 0 -15px 30px rgba(0,0,0,0.3);
+			-moz-box-shadow: 0 2px 6px rgba(0,0,0,0.5), inset 0 1px rgba(255,255,255,0.3), inset 0 10px rgba(255,255,255,0.2), inset 0 10px 20px rgba(255,255,255,0.25), inset 0 -15px 30px rgba(0,0,0,0.3);
+	}
+	
+	
+	li:nth-child(2){
+		background-color: #C7F464;
+	}
+	
+	li:nth-child(1){
+		background-color: #FF6B6B;
+	}
+	
+	li:nth-child(3){
+		background-color: #C44D58;
+	}
+	
+	table::-moz-selection {
+		background: transparent;
+	} 
+
+	table::selection {
+		background: transparent;
+	} 
+	
+	table {
+		-moz-user-select: none; /* mozilla browsers */
+		-khtml-user-select: none; /* webkit browsers */
+	}
+	
 	.client-table  {
-		height:90%;
-		width: 100%;
 		margin: 0px auto;
-		float: left;
 		border-radius: 10px;
 	}
 	
+	
 	.host-table  {
-		height:150px;
-		width: 200px;
+		height:450px;
+		width: 300px;
 		margin: 0px 20px;
-		float: left;
 		border-radius: 10px;
 		position: absolute;
 	}
 	
-	/* Green */
-	.green .on {
-		background-color: rgba(0, 255, 57, .8);
+	.transitions{
+		-webkit-transition: all 1s linear;
 	}
 	
-	.green .row-highlight .on {
+	input{
+		height: 35px;
+		width: 250px;
+		font-size: 20px;
+		margin-bottom: 10px;
+		-moz-border-radius: 4px;
+		-webkit-border-radius: 4px;
+	}
+	
+	button {
+		height: 35px;
+		font-size: 20px;
+		
+		-moz-border-radius: 5px;
+		-webkit-border-radius: 5px;
+		border-radius: 5px;
+
+
+		box-shadow: 
+		  0 1px 2px #fff, /*bottom external highlight*/
+		  0 -1px 1px #666, /*top external shadow*/ 
+		  inset 0 -1px 1px rgba(0,0,0,0.5), /*top internal highlight*/ 
+		  inset 0 1px 1px rgba(255,255,255,0.8); /*bottom internal shadow*/ 
+	}
+	
+	button:active {
+		margin-bottom: 1px;
+		height: 35px;
+		position: relative;
+		top: 1px;
+		color: #eee !important;
+
+		-moz-box-shadow: 0 1px 1px #eee, 0 -2px 1px #555;
+		-webkit-box-shadow: 0 1px 1px #eee, 0 -2px 1px #555;
+		box-shadow: 0 1px 1px #eee, 0 -2px 1px #555;
+	}
+	
+	select {
+		height: 35px;
+		width:100%;
+		font-size: 20px;
+		margin-bottom: 10px;
+		-moz-border-radius: 4px;
+		-webkit-border-radius: 4px;
+	}
+	.title {
+		color: black;
+		position: relative;
+		top: 450px;
+		text-align: center;
+		font-size: 30px;
+	}
+	#logo {
+	color:white;
+	text-align: center;
+	margin: 0px auto 0px auto;
+	text-shadow: 0 1px 0 #ccc, 
+				   0 2px 0 #c9c9c9,
+				   0 3px 0 #bbb,
+				   0 4px 0 #b9b9b9,
+				   0 5px 0 #aaa,
+				   0 6px 1px rgba(0,0,0,.1),
+				   0 0 5px rgba(0,0,0,.1),
+				   0 1px 3px rgba(0,0,0,.3),
+				   0 3px 5px rgba(0,0,0,.2),
+				   0 5px 10px rgba(0,0,0,.25),
+				   0 10px 10px rgba(0,0,0,.2),
+				   0 20px 20px rgba(0,0,0,.15);
+	}
+	
+	/* synth */
+	.synth .on {
+		background-color: rgba(0, 255, 57, .8);
+		
+	}
+	
+	.synth .row-highlight .on {
 		background-color: rgba(0, 255, 57, 1)!important;
 	}
 	
-	.green .row-highlight td {
-		background-color: rgba(100, 250, 0, .6);
+	.synth .row-highlight td {		
+		background-color: rgba(100, 250, 90, .6);
 	}
 	
-	.green td{
+	.synth td{
 		cursor: pointer;
 		background-color: rgba(0, 250, 0, .3);
 		border: #49A34B solid 2px;
 		border-radius: 3px;
+		
 	}
 	
-	/* BW */
-	.bw .on {
-		background-color: rgba(255, 255,255, .8);
+	/* drums */
+	.drums .on {
+		background-color: 0890FF;
 	}
 	
-	.bw .row-highlight .on {
-		background-color: rgba(255, 255,255, 1)!important;
+	.drums .row-highlight .on {
+		background-color: 001EFF!important;
 	}
 	
-	.bw .row-highlight td {
+	.drums .row-highlight td {
 		background-color: rgba(100, 100, 100, .6);
 	}
 	
-	.bw td{
+	.drums td{
 		cursor: pointer;
-		background-color: rgba(250, 250, 250, .3);
+		background-color: #91E7FF;
 		border: #333 solid 2px;
 		border-radius: 3px;
 	}
 </style>
- <script src="/nowjs/now.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
+ 
+</head>
+<body>
+	<div id="logo">
+		Loading...
+	</div>
+	<script src="/nowjs/now.js"></script>
+<script src="static/jquery.min.js"></script>
 <script src="static/sammy.min.js"></script>
 <script src="static/app.js"></script>
 <script src="static/routing.js"></script>
-</head>
-<body>
-
 </body>
 </html>
