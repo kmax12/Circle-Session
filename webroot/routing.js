@@ -35,7 +35,7 @@ var app = $.sammy('body', function() {
 			
 			
 			var room = $('#join-input').val(),
-			instruments = {"0":'synth', "1":'drums', "2":'sax1', "3":"sax2"},
+			instruments = {"0":'synth', "1":'drums', "2":'sax1', "3":"sax2", "4":"percussion1", "5":"percussion2"},
 			instrument = instruments[$('#instrument-input').val()];
 			if (!room){
 				room = 'Testing';
